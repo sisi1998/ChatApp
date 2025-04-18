@@ -6,7 +6,7 @@ spring:
     password: secret
     driver-class-name: com.mysql.cj.jdbc.Driver
     
-  ai.openai.api-key: 'vv'
+  ai.openai.api-key: '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'
 
   jpa:
     hibernate:
