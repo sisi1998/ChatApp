@@ -20,7 +20,7 @@ class ConversationServiceIntegrationTest {
 
     @Test
     void realChatGptCall() throws IOException {
-        String response = service.getChatGptResponse("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", "What's the capital of France?");
+        String response = service.getChatGptResponse("vv", "What's the capital of France?");
         System.out.println("ChatGPT says: " + response);
         Assertions.assertNotNull(response);
     }

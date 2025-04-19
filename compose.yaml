@@ -1,10 +1,37 @@
+version: '3'
 services:
   mysql:
     image: 'mysql:latest'
     environment:
-      - 'MYSQL_DATABASE=mydatabase'
-      - 'MYSQL_PASSWORD=secret'
-      - 'MYSQL_ROOT_PASSWORD=verysecret'
-      - 'MYSQL_USER=myuser'
+      - 'MYSQL_DATABASE=mydatabase'       # Database name to create when the container starts
+      - 'MYSQL_PASSWORD=secret'           # Password for the database user
+      - 'MYSQL_ROOT_PASSWORD=verysecret'  # Password for the root user
+      - 'MYSQL_USER=myuser'               # A user to connect to the database
     ports:
-      - '3306:3306'
+      - '3306:3306'  # Exposes MySQL on port 3306 of your local machine
+    networks:
+      - app-network  # Assigns this service to the app-network for communication with the Spring Boot app
+
+  springapp:
+    image: your-spring-boot-app-image:latest
+    build:
+      context: .  # Path to the directory containing your Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/mydatabase  # Spring Boot connection URL to MySQL
+      - SPRING_DATASOURCE_USERNAME=myuser  # Username for connecting to MySQL
+      - SPRING_DATASOURCE_PASSWORD=secret  # Password for the above user
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver  # MySQL JDBC driver
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update  # Hibernate DDL settings
+      - SPRING_JPA_SHOW_SQL=true  # Show SQL in the logs
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect  # Dialect for MySQL
+      - AI_OPENAI_API_KEY=vv # Environment variable for your API key
+    ports:
+      - '8080:8080'  # Exposes the Spring Boot app on port 8080 of your local machine
+    depends_on:
+      - mysql  # Ensures that MySQL starts before the Spring Boot app
+    networks:
+      - app-network  # Connects the Spring Boot app to the same network as MySQL
+
+networks:
+  app-network:  # Defines the custom network for inter-container communication
+    driver: bridge  # The default network driver; ensures the containers can talk to each other
